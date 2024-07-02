@@ -39,7 +39,7 @@ def download_tt(url_tiktok):
 
 
 # Введите сюда токен вашего бота
-BOT_TOKEN = '6308423351:AAEdjuR5wMid8ovw8QOZn6jEGC4gz9nqm44'
+BOT_TOKEN = '6846762920:AAFYPWrc16abK9CK-oHknshcn22tiZAqkpE'
 # Идентификатор чата
 # CHAT_ID = '5527705092'
 # URL видео
@@ -77,6 +77,9 @@ def delete_file(path: str):
     except Exception as e:
         print(f"Не удалось удалить файл {path}: {e}")
 
+@dp.message(Command("start"))
+async def cmd_start(message: types.Message):
+    await message.reply(f"Добро пожаловать!\nВы можете скинуть мне ссылку на пост TikTok откуда нужно выгрузить видео и текст — через пару секунд этот видос будет у вас!")
 
 @dp.message(F.text.contains("tiktok.com"))
 async def handle_tiktok_link(message: Message):
@@ -108,9 +111,9 @@ async def handle_tiktok_link(message: Message):
             # Проверяем размер файла по пороговому значению
             if file_size_kb < threshold_kb:
                 if title == "":
-                    await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"Разработчик бота: @ameerchik6")
+                    await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"Скачано с помощью @tiktok_downloadcr_bot\nРазработчик бота: @ameerchik6")
                 else:
-                    await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"Описание: {title}\n\nРазработчик бота: @ameerchik6")
+                    await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"Описание: {title}\n\Скачано с помощью @tiktok_downloadcr_bot\nРазработчик бота: @ameerchik6")
             else:
                 text = escape_markdown(
                     "Видео, которое вы хотите сохранить весит более 50 Мб. Поэтому данное видео доступно для скачивания только по ссылке ниже!")
