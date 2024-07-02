@@ -79,7 +79,7 @@ def delete_file(path: str):
 
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    await message.reply(f"Добро пожаловать!\nВы можете скинуть мне ссылку на пост TikTok откуда нужно выгрузить видео и текст — через пару секунд этот видос будет у вас!")
+    await message.reply(f"Добро пожаловать!\n\nВы можете скинуть мне ссылку на пост TikTok откуда нужно выгрузить видео и текст — через пару секунд этот видос будет у вас!")
 
 @dp.message(F.text.contains("tiktok.com"))
 async def handle_tiktok_link(message: Message):
