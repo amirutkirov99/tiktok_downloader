@@ -83,6 +83,8 @@ async def cmd_start(message: types.Message):
 
 @dp.message(F.text.contains("tiktok.com"))
 async def handle_tiktok_link(message: Message):
+    dev_link_escaped = escape_markdown("Скачано с помощью @tiktok_downloadcr_bot\nРазработчик бота: @ameerchik6")
+    dev_link = "Скачано с помощью @tiktok_downloadcr_bot\nРазработчик бота: @ameerchik6"
     try:
         music_path = "audio.mp3"
         video_path = "video.mp4"
@@ -111,9 +113,9 @@ async def handle_tiktok_link(message: Message):
             # Проверяем размер файла по пороговому значению
             if file_size_kb < threshold_kb:
                 if title == "":
-                    await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"Скачано с помощью @tiktok_downloadcr_bot\nРазработчик бота: @ameerchik6")
+                    await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"{dev_link}")
                 else:
-                    await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"```Описание\n{escape_markdown(title)}```\n\nСкачано с помощью @tiktok_downloadcr_bot\nРазработчик бота: @ameerchik6", parse_mode=ParseMode.MARKDOWN_V2)
+                    await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"```Описание\n{escape_markdown(title)}```\n\n{dev_link_escaped}", parse_mode=ParseMode.MARKDOWN_V2)
             else:
                 text = escape_markdown(
                     "Видео, которое вы хотите сохранить весит более 50 Мб. Поэтому данное видео доступно для скачивания только по ссылке ниже!")
