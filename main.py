@@ -38,7 +38,7 @@ def download_tt(url_tiktok):
 # Введите сюда токен вашего бота
 BOT_TOKEN = '6308423351:AAEdjuR5wMid8ovw8QOZn6jEGC4gz9nqm44'
 # Идентификатор чата
-CHAT_ID = '5527705092'
+# CHAT_ID = '5527705092'
 # URL видео
 # video_url = "tiktok_videos/video.mp4"
 video_url = "D:\Desktop\cru\\tiktok_videos\\video.mp4"
@@ -112,7 +112,7 @@ async def handle_tiktok_link(message: Message):
                 text = escape_markdown(
                     "Видео, которое вы хотите сохранить весит более 50 Мб. Поэтому данное видео доступно для скачивания только по ссылке ниже!")
                 await bot.send_message(chat_id=message.from_user.id, text=f"{text}\n\n[Скачать видео]({hdplay})", parse_mode=ParseMode.MARKDOWN_V2)
-        await bot.send_audio(chat_id=CHAT_ID, audio=music_input, title=music_title, performer=music_author)
+        await bot.send_audio(chat_id=message.from_user.id, audio=music_input, title=music_title, performer=music_author)
 
     except Exception as e:
         await message.reply(f"Не удалось отправить видео или введенная ссылка неправильная! {e}")
