@@ -9,6 +9,9 @@ import asyncio
 import requests
 import os
 import re
+from background import keep_alive
+
+keep_alive()
 
 
 def escape_markdown(text: str) -> str:
