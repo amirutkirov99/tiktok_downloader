@@ -107,7 +107,7 @@ async def handle_tiktok_link(message: Message):
             file_size = os.path.getsize(video_path)
             # Конвертируем размер в килобайты
             file_size_kb = file_size / 1024
-            threshold_kb = 50
+            threshold_kb = 50 * 1024
             # Проверяем размер файла по пороговому значению
             if file_size_kb < threshold_kb:
                 if title == "":
