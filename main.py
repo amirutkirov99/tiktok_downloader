@@ -113,7 +113,7 @@ async def handle_tiktok_link(message: Message):
                 if title == "":
                     await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"Скачано с помощью @tiktok_downloadcr_bot\nРазработчик бота: @ameerchik6")
                 else:
-                    await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"Описание: {title}\n\nСкачано с помощью @tiktok_downloadcr_bot\nРазработчик бота: @ameerchik6")
+                    await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"```Описание\n{title}```\n\nСкачано с помощью @tiktok_downloadcr_bot\nРазработчик бота: @ameerchik6")
             else:
                 text = escape_markdown(
                     "Видео, которое вы хотите сохранить весит более 50 Мб. Поэтому данное видео доступно для скачивания только по ссылке ниже!")
