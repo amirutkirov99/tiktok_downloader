@@ -139,7 +139,7 @@ async def handle_tiktok_link(message: Message):
                 # Проверяем размер файла по пороговому значению
                 if file_size_kb < threshold_kb:
                     if title == "":
-                        await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"Скачать видео в [hd]({videohd_url})\n\n{dev_link}")
+                        await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"Скачать видео в [hd]({videohd_url})\n\n{dev_link_escaped}", parse_mode=ParseMode.MARKDOWN_V2)
                     else:
                         await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"```Описание\n{escape_markdown(title)}```\nСкачать видео в [hd]({videohd_url})\n\n{dev_link_escaped}", parse_mode=ParseMode.MARKDOWN_V2)
                 else:
@@ -158,6 +158,7 @@ async def handle_tiktok_link(message: Message):
 
 
 async def main():
+    await bot.send_message(chat_id=5527705092, text="Бот заработало!")
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
