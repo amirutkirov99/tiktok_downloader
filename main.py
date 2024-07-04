@@ -3,6 +3,8 @@ import aiohttp
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.types import Message, FSInputFile
+from aiogram.utils.media_group import MediaGroupBuilder
+from aiogram import types
 from aiogram import F
 from aiogram.enums import ParseMode
 import asyncio
@@ -41,8 +43,8 @@ def download_tt(url_tiktok):
 
 
 # Введите сюда токен вашего бота
-BOT_TOKEN = '6846762920:AAFYPWrc16abK9CK-oHknshcn22tiZAqkpE'
-# BOT_TOKEN = '6308423351:AAEdjuR5wMid8ovw8QOZn6jEGC4gz9nqm44'  # kino poisk
+# BOT_TOKEN = '6846762920:AAFYPWrc16abK9CK-oHknshcn22tiZAqkpE'
+BOT_TOKEN = '6308423351:AAEdjuR5wMid8ovw8QOZn6jEGC4gz9nqm44'  # kino poisk
 # Идентификатор чата
 # CHAT_ID = '5527705092'
 # URL видео
@@ -129,7 +131,33 @@ async def handle_tiktok_link(message: Message):
 
         # Отправляем видео
         # print("Отправляю")
-        if True:
+        if 'images' in json_tt:
+            images = json_tt['images']
+            a = 1
+            for img in images:
+                img_path = f"id{user_id}/img/{a}.jpeg"
+                await download(img, img_path)
+                a += 1
+            dev_link = f"```Описание\n{escape_markdown(title)}```\n\n{dev_link_escaped}"
+            media_group = MediaGroupBuilder(caption=dev_link)
+
+            b = 1
+            c = 1
+            for i in range(a-1):
+                img_path = f"id{user_id}/img/{b}.jpeg"
+                media_group.add(
+                    type="photo",
+                    media=FSInputFile(path=img_path),
+                    parse_mode=ParseMode.MARKDOWN_V2
+                )
+                b += 1
+                c += 1
+                if c == 11:
+                    await bot.send_media_group(chat_id=message.chat.id, media=media_group.build())
+                    media_group = MediaGroupBuilder(caption=dev_link)
+                    c = 1
+            await bot.send_media_group(chat_id=message.chat.id, media=media_group.build())
+        else:
             if os.path.exists(video_path):
                 # Получаем размер файла в байтах
                 file_size = os.path.getsize(video_path)
@@ -146,11 +174,12 @@ async def handle_tiktok_link(message: Message):
                     text = escape_markdown(
                         "Видео, которое вы хотите сохранить весит более 50 Мб. Поэтому данное видео доступно для скачивания только по ссылке ниже!")
                     await bot.send_message(chat_id=message.from_user.id, text=f"{text}\nСкачать видео в [hd]({videohd_url})\n\n[Скачать видео]({video_url})", parse_mode=ParseMode.MARKDOWN_V2)
-                await bot.send_audio(chat_id=message.from_user.id, audio=music_input, title=music_title, performer=music_author)
+        await bot.send_audio(chat_id=message.from_user.id, audio=music_input, title=music_title, performer=music_author)
         # elif images_urls:
         #     print("Есть!")
 
     except Exception as e:
+        print(e)
         await message.reply(f"Не удалось отправить видео или введенная ссылка неправильная! {e}")
     finally:
         pass
