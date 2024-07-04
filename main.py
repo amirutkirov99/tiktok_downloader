@@ -20,20 +20,6 @@ def escape_markdown(text: str) -> str:
     return ''.join(f'\\{char}' if char in escape_chars else char for char in text)
 
 
-# url = "https://tiktok-nowatermark-full-services.p.rapidapi.com/api"
-
-# payload = { "url": "https://www.tiktok.com/@vladislav.mmm/video/7383582429346336007" }
-# headers = {
-# 	"x-rapidapi-key": "45f4e95f74mshb7231980c6f3821p13ff84jsnac7950a93cb8",
-# 	"x-rapidapi-host": "tiktok-nowatermark-full-services.p.rapidapi.com",
-# 	"Content-Type": "application/json"
-# }
-
-# response = requests.post(url, json=payload, headers=headers)
-
-# print(response.json())
-
-
 def download_tt(url_tiktok):
     url = "https://www.tikwm.com/api/"
     payload = {
@@ -55,8 +41,8 @@ def download_tt(url_tiktok):
 
 
 # Введите сюда токен вашего бота
-BOT_TOKEN = '6846762920:AAFYPWrc16abK9CK-oHknshcn22tiZAqkpE'
-# BOT_TOKEN = '6308423351:AAEdjuR5wMid8ovw8QOZn6jEGC4gz9nqm44'  # kino poisk
+# BOT_TOKEN = '6846762920:AAFYPWrc16abK9CK-oHknshcn22tiZAqkpE'
+BOT_TOKEN = '6308423351:AAEdjuR5wMid8ovw8QOZn6jEGC4gz9nqm44'  # kino poisk
 # Идентификатор чата
 # CHAT_ID = '5527705092'
 # URL видео
@@ -115,7 +101,7 @@ async def handle_tiktok_link(message: Message):
         url_tt = message.text
 
         json_tt = download_tt(url_tt)
-        print(json_tt)
+        # print(json_tt)
         # print(json_tt)
         # json_tt = download_tt(url_tt)
         # if 'images' in json_tt:
@@ -127,13 +113,15 @@ async def handle_tiktok_link(message: Message):
         #     #     download(images_urls[i], images_path)
         #     print(images_urls)
         title = json_tt['title']
-        print("title: ", title)
-        hdplay = json_tt['play']
+        # print("title: ", title)
+        play = json_tt['play']
+        hdplay = json_tt['hdplay']
         music_title = json_tt['music_info']['title']
         music_author = json_tt['music_info']['author']
         music_url = "https://www.tikwm.com/" + \
             json_tt['music']
-        video_url = "https://www.tikwm.com/" + hdplay
+        video_url = "https://www.tikwm.com/" + play
+        videohd_url = "https://www.tikwm.com/" + hdplay
         await download(video_url, video_path)
         await download(music_url, music_path)
         video_input = FSInputFile(video_path)
@@ -153,11 +141,11 @@ async def handle_tiktok_link(message: Message):
                     if title == "":
                         await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"{dev_link}")
                     else:
-                        await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"```Описание\n{escape_markdown(title)}```\n\n{dev_link_escaped}", parse_mode=ParseMode.MARKDOWN_V2)
+                        await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"```Описание\n{escape_markdown(title)}```\nСкачать видео в [hd]({videohd_url})\n\n{dev_link_escaped}", parse_mode=ParseMode.MARKDOWN_V2)
                 else:
                     text = escape_markdown(
                         "Видео, которое вы хотите сохранить весит более 50 Мб. Поэтому данное видео доступно для скачивания только по ссылке ниже!")
-                    await bot.send_message(chat_id=message.from_user.id, text=f"{text}\n\n[Скачать видео]({video_url})", parse_mode=ParseMode.MARKDOWN_V2)
+                    await bot.send_message(chat_id=message.from_user.id, text=f"{text}\nСкачать видео в [hd]({videohd_url})\n\n[Скачать видео]({video_url})", parse_mode=ParseMode.MARKDOWN_V2)
                 await bot.send_audio(chat_id=message.from_user.id, audio=music_input, title=music_title, performer=music_author)
         # elif images_urls:
         #     print("Есть!")
