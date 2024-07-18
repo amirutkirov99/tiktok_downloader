@@ -167,14 +167,14 @@ async def handle_tiktok_link(message: Message):
                 # Проверяем размер файла по пороговому значению
                 if file_size_kb < threshold_kb:
                     if title == "":
-                        await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"Скачать видео в [hd]({videohd_url})\n\n{dev_link_escaped}", parse_mode=ParseMode.MARKDOWN_V2)
+                        await bot.send_video(chat_id=message.chat.id, video=video_input, caption=f"Скачать видео в [hd]({videohd_url})\n\n{dev_link_escaped}", parse_mode=ParseMode.MARKDOWN_V2)
                     else:
-                        await bot.send_video(chat_id=message.from_user.id, video=video_input, caption=f"```Описание\n{escape_markdown(title)}```\nСкачать видео в [hd]({videohd_url})\n\n{dev_link_escaped}", parse_mode=ParseMode.MARKDOWN_V2)
+                        await bot.send_video(chat_id=message.chat.id, video=video_input, caption=f"```Описание\n{escape_markdown(title)}```\nСкачать видео в [hd]({videohd_url})\n\n{dev_link_escaped}", parse_mode=ParseMode.MARKDOWN_V2)
                 else:
                     text = escape_markdown(
                         "Видео, которое вы хотите сохранить весит более 50 Мб. Поэтому данное видео доступно для скачивания только по ссылке ниже!")
-                    await bot.send_message(chat_id=message.from_user.id, text=f"{text}\nСкачать видео в [hd]({videohd_url})\n\n[Скачать видео]({video_url})", parse_mode=ParseMode.MARKDOWN_V2)
-        await bot.send_audio(chat_id=message.from_user.id, audio=music_input, title=music_title, performer=music_author)
+                    await bot.send_message(chat_id=message.chat.id, text=f"{text}\nСкачать видео в [hd]({videohd_url})\n\n[Скачать видео]({video_url})", parse_mode=ParseMode.MARKDOWN_V2)
+        await bot.send_audio(chat_id=message.chat.id, audio=music_input, title=music_title, performer=music_author)
         # elif images_urls:
         #     print("Есть!")
 
