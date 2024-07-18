@@ -14,11 +14,14 @@ import shutil
 import re
 from background import keep_alive
 import time
+from aiogram.enums import ChatAction
 
 keep_alive()
 
+
 BOT_TOKEN = '6846762920:AAFYPWrc16abK9CK-oHknshcn22tiZAqkpE'
 # BOT_TOKEN = '6308423351:AAEdjuR5wMid8ovw8QOZn6jEGC4gz9nqm44'  # kino poisk
+
 
 def escape_markdown(text: str) -> str:
     escape_chars = r'\_*[]()~`>#+-=|{}.!'
@@ -83,7 +86,6 @@ def download_inst(url_inst):
 
 
 
-
 # Идентификатор чата
 # CHAT_ID = '5527705092'
 # URL видео
@@ -125,6 +127,8 @@ def delete_file(path: str):
 
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
+    await bot.send_chat_action(message.chat.id, ChatAction.TYPING)
+    # await asyncio.sleep(3)
     await message.reply(f"Добро пожаловать!\n\nВы можете скинуть мне ссылку на пост TikTok откуда нужно выгрузить видео и текст — через пару секунд этот видос будет у вас!")
 
 
@@ -192,10 +196,12 @@ async def handle_tiktok_link(message: Message):
                 b += 1
                 c += 1
                 if c == 11:
+                    await bot.send_chat_action(message.chat.id, ChatAction.UPLOAD_DOCUMENT)
                     await bot.send_media_group(chat_id=message.chat.id, media=media_group.build())
                     media_group = MediaGroupBuilder(caption=dev_link)
                     c = 1
                 # time.sleep(1)
+            await bot.send_chat_action(message.chat.id, ChatAction.UPLOAD_DOCUMENT)
             await bot.send_media_group(chat_id=message.chat.id, media=media_group.build())
         else:
             if os.path.exists(video_path):
@@ -207,19 +213,24 @@ async def handle_tiktok_link(message: Message):
                 # Проверяем размер файла по пороговому значению
                 if file_size_kb < threshold_kb:
                     if title == "":
+                        await bot.send_chat_action(message.chat.id, ChatAction.UPLOAD_VIDEO)
                         await bot.send_video(chat_id=message.chat.id, video=video_input, caption=f"Скачать видео в [hd]({videohd_url})\n\n{dev_link_escaped}", parse_mode=ParseMode.MARKDOWN_V2)
                     else:
+                        await bot.send_chat_action(message.chat.id, ChatAction.UPLOAD_VIDEO)
                         await bot.send_video(chat_id=message.chat.id, video=video_input, caption=f"```Описание\n{escape_markdown(title)}```\nСкачать видео в [hd]({videohd_url})\n\n{dev_link_escaped}", parse_mode=ParseMode.MARKDOWN_V2)
                 else:
                     text = escape_markdown(
                         "Видео, которое вы хотите сохранить весит более 50 Мб. Поэтому данное видео доступно для скачивания только по ссылке ниже!")
+                    await bot.send_chat_action(message.chat.id, ChatAction.TYPING)
                     await bot.send_message(chat_id=message.chat.id, text=f"{text}\nСкачать видео в [hd]({videohd_url})\n\n[Скачать видео]({video_url})", parse_mode=ParseMode.MARKDOWN_V2)
+        await bot.send_chat_action(message.chat.id, ChatAction.UPLOAD_DOCUMENT)
         await bot.send_audio(chat_id=message.chat.id, audio=music_input, title=music_title, performer=music_author)
         # elif images_urls:
         #     print("Есть!")
 
     except Exception as e:
         print(e)
+        await bot.send_chat_action(message.chat.id, ChatAction.TYPING)
         await message.reply(f"Не удалось отправить видео или введенная ссылка неправильная!")
     finally:
         pass
@@ -302,13 +313,15 @@ async def handle_instagram_link(message: Message):
                 b += 1
                 c += 1
                 if c == 11:
+                    await bot.send_chat_action(message.chat.id, ChatAction.UPLOAD_DOCUMENT)
                     await bot.send_media_group(chat_id=message.chat.id, media=media_group.build())
                     media_group = MediaGroupBuilder(caption=dev_link)
                     c = 1
+            await bot.send_chat_action(message.chat.id, ChatAction.UPLOAD_DOCUMENT)
             await bot.send_media_group(chat_id=message.chat.id, media=media_group.build())
         
     except Exception as e:
-        print(e)
+        # print(e)
         await message.reply(f"Не удалось отправить видео или введенная ссылка неправильная!")
     finally:
         pass
