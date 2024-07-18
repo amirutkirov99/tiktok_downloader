@@ -17,6 +17,8 @@ import time
 
 keep_alive()
 
+BOT_TOKEN = '6846762920:AAFYPWrc16abK9CK-oHknshcn22tiZAqkpE'
+# BOT_TOKEN = '6308423351:AAEdjuR5wMid8ovw8QOZn6jEGC4gz9nqm44'  # kino poisk
 
 def escape_markdown(text: str) -> str:
     escape_chars = r'\_*[]()~`>#+-=|{}.!'
@@ -79,8 +81,7 @@ def download_inst(url_inst):
 
 # Введите сюда токен вашего бота
 
-# BOT_TOKEN = '6846762920:AAFYPWrc16abK9CK-oHknshcn22tiZAqkpE'
-BOT_TOKEN = '6308423351:AAEdjuR5wMid8ovw8QOZn6jEGC4gz9nqm44'  # kino poisk
+
 
 
 # Идентификатор чата
