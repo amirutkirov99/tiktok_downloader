@@ -13,6 +13,7 @@ import os
 import shutil
 import re
 from background import keep_alive
+import time
 
 keep_alive()
 
@@ -36,6 +37,40 @@ def download_tt(url_tiktok):
     response_json = response.json()['data']
     return response_json
 
+def download_inst(url_inst):
+    url = 'https://social.ioconvert.com/instagram'
+    headers = {
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Accept-Language': 'ru,ru-RU;q=0.9,en;q=0.8,uz;q=0.7',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'Origin': 'https://igdown.net',
+        'Referer': 'https://igdown.net/',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+    }
+
+    payload = {
+        'url': url_inst,
+        'obj': 'reels',
+        'language': 'en'
+    }
+
+    response = requests.post(url, headers=headers, data=payload)
+    data = response.json()['data']
+    key = data['key']
+
+    if "video" in data:
+        type = "video"
+        items = [item['id'] for item in data[type]['all']]
+    else:
+        type = "images"
+        items = [item['id'] for item in data[type]]
+    medias = []
+    for item in items:
+        download_url = f"https://social.ioconvert.com/download?obj=reels&key={key}&type={type}&id={item}&download=1&file_prefix=igDown&target_id="
+        medias.append(download_url)
+    return medias
+
 # title = response_json['data']['title']
 # hdplay = response_json['data']['play']
 # print("Title:", title)
@@ -43,8 +78,11 @@ def download_tt(url_tiktok):
 
 
 # Введите сюда токен вашего бота
-BOT_TOKEN = '6846762920:AAFYPWrc16abK9CK-oHknshcn22tiZAqkpE'
-# BOT_TOKEN = '6308423351:AAEdjuR5wMid8ovw8QOZn6jEGC4gz9nqm44'  # kino poisk
+
+# BOT_TOKEN = '6846762920:AAFYPWrc16abK9CK-oHknshcn22tiZAqkpE'
+BOT_TOKEN = '6308423351:AAEdjuR5wMid8ovw8QOZn6jEGC4gz9nqm44'  # kino poisk
+
+
 # Идентификатор чата
 # CHAT_ID = '5527705092'
 # URL видео
@@ -156,6 +194,7 @@ async def handle_tiktok_link(message: Message):
                     await bot.send_media_group(chat_id=message.chat.id, media=media_group.build())
                     media_group = MediaGroupBuilder(caption=dev_link)
                     c = 1
+                # time.sleep(1)
             await bot.send_media_group(chat_id=message.chat.id, media=media_group.build())
         else:
             if os.path.exists(video_path):
@@ -180,7 +219,96 @@ async def handle_tiktok_link(message: Message):
 
     except Exception as e:
         print(e)
-        await message.reply(f"Не удалось отправить видео или введенная ссылка неправильная! {e}")
+        await message.reply(f"Не удалось отправить видео или введенная ссылка неправильная!")
+    finally:
+        pass
+        delete_file(f"id{user_id}")
+
+
+async def inst_download(url: str, path: str):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            if response.status == 200:
+                content_type = response.headers.get('Content-Type')
+                if content_type:
+                    if 'image/jpeg' in content_type:
+                        extension = '.jpg'
+                    elif 'image/png' in content_type:
+                        extension = '.png'
+                    elif 'image/gif' in content_type:
+                        extension = '.gif'
+                    elif 'image/webp' in content_type:
+                        extension = '.webp'
+                    elif 'video/mp4' in content_type:
+                        extension = '.mp4'
+                    elif 'application/pdf' in content_type:
+                        extension = '.pdf'
+                    elif 'text/html' in content_type:
+                        extension = '.html'
+                    else:
+                        extension = ''
+                else:
+                    extension = ''
+
+                # Проверяем, есть ли уже расширение в path
+                if not path.endswith(extension):
+                    save_path = f"{path}{extension}"
+                else:
+                    save_path = path
+
+                with open(save_path, 'wb') as f:
+                    f.write(await response.read())
+                    print(f"Скачалось: {save_path}")
+            else:
+                raise Exception(f"Failed to download file, status code: {response.status}")
+
+
+@dp.message(F.text.contains("instagram.com"))
+async def handle_instagram_link(message: Message):
+    dev_link = "Скачано с помощью @tiktok_downloadcr_bot\nРазработчик бота: @ameerchik6"
+    try:
+        medias = download_inst(message.text)
+        print(medias)
+        user_id = message.from_user.id
+        
+        if medias:
+            a = 1
+            for media in medias:
+                img_path = f"id{user_id}/media{a}"
+                await inst_download(media, img_path)
+                a += 1
+            media_group = MediaGroupBuilder(caption=dev_link)
+
+            b = 1
+            c = 1
+            for i in range(a-1):
+                img_path = f"id{user_id}/media{b}.jpg"
+                video_path = f"id{user_id}/media{b}.mp4"
+                if os.path.exists(img_path):
+                    # print(img_path)
+                    media_group.add(
+                        type="photo",
+                        media=FSInputFile(path=img_path)
+                    )
+                elif os.path.exists(video_path):
+                    print(video_path)
+                    media_group.add(
+                        type="video",
+                        media=FSInputFile(path=video_path)
+                    )
+                b += 1
+                c += 1
+                if c == 11:
+                    await bot.send_media_group(chat_id=message.chat.id, media=media_group.build())
+                    media_group = MediaGroupBuilder(caption=dev_link)
+                    c = 1
+            await bot.send_media_group(chat_id=message.chat.id, media=media_group.build())
+        
+    except Exception as e:
+        print(e)
+        await message.reply(f"Не удалось отправить видео или введенная ссылка неправильная!")
     finally:
         pass
         delete_file(f"id{user_id}")
