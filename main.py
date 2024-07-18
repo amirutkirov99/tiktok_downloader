@@ -261,7 +261,7 @@ async def inst_download(url: str, path: str):
 
                 with open(save_path, 'wb') as f:
                     f.write(await response.read())
-                    print(f"Скачалось: {save_path}")
+                    # print(f"Скачалось: {save_path}")
             else:
                 raise Exception(f"Failed to download file, status code: {response.status}")
 
@@ -271,7 +271,7 @@ async def handle_instagram_link(message: Message):
     dev_link = "Скачано с помощью @tiktok_downloadcr_bot\nРазработчик бота: @ameerchik6"
     try:
         medias = download_inst(message.text)
-        print(medias)
+        # print(medias)
         user_id = message.from_user.id
         
         if medias:
@@ -294,7 +294,7 @@ async def handle_instagram_link(message: Message):
                         media=FSInputFile(path=img_path)
                     )
                 elif os.path.exists(video_path):
-                    print(video_path)
+                    # print(video_path)
                     media_group.add(
                         type="video",
                         media=FSInputFile(path=video_path)
